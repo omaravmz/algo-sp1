@@ -13,12 +13,12 @@ bool findPattern(const string& text, const string& pattern, int& startPos);
 
 // ==================== Part 2: Longest palindromic substring ====================
 pair<int, int> longestPalindrome(const string& text);
+string transform(const string& text);
 
 // ==================== Part 3: Longest common substring ====================
 pair<int, int> longestCommonSubstring(const string& a, const string& b);
 
 int main() {
-    // EJEMPLOS, CAMBIAR POR LOS ARCHIVOS DE TRANSMISIONES Y MCODES QUE SEAN NECESARIOS
     const string transmission1File = "transmission1.txt";
     const string transmission2File = "transmission2.txt";
     const string mcodeFiles[3] = {"mcode1.txt", "mcode2.txt", "mcode3.txt"};
@@ -139,7 +139,54 @@ bool findPattern(const string& text, const string& pattern, int& startPos) {
 }
 
 pair<int, int> longestPalindrome(const string& text) {
+    string transformed = transform(text);
+    int n = transformed.size();
+    vector<int> p(n, 0);
+    
+    int center = 0;
+    int right = 0;
+    int maxLen = 0;
+    int centerIndex = 0;
 
+    for (int i = 1; i < n; i++) {
+        int mirror = 2 * center - i;
+        if (i < right) {
+            p[i] = min(right - i, p[mirror]);
+        }
+        else {
+            p[i] = 0;
+        }
+
+        while (i + 1 + p[i] < n && i - 1 - p[i] >= 0 && transformed[i + 1 + p[i]] == transformed[i - 1 - p[i]]) {
+            p[i]++;
+        }
+
+        if (i + p[i] > right) {
+            center = i;
+            right = i + p[i];
+        }
+
+        if (p[i] > maxLen) {
+            maxLen = p[i];
+            centerIndex = i;
+        }
+
+    };
+
+    int start = (centerIndex - maxLen) / 2;
+    int end = start + maxLen - 1;
+
+    // Ternary operator in case the string is empty, returning (0, 0) instead of (-1, -1)
+    return maxLen > 0 ? make_pair(start + 1, end + 1) : make_pair(0, 0);
+}
+
+string transform(const string& text){
+    string transformed = "#";
+    for (char c : text) {
+        transformed += c;
+        transformed += "#";
+    }
+    return transformed;
 }
 
 pair<int, int> longestCommonSubstring(const string& a, const string& b) {
