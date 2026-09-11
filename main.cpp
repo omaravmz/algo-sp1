@@ -45,18 +45,18 @@ int main() {
     }
 
     // ---------- Part 2 ----------
-    /*
+    
     pair<int, int> pal1 = longestPalindrome(transmission1);
     pair<int, int> pal2 = longestPalindrome(transmission2);
     cout << pal1.first << " " << pal1.second << "\n";
     cout << pal2.first << " " << pal2.second << "\n";
-    */
+    
 
     // ---------- Part 3 ----------
-    /*
+    
     pair<int, int> lcs = longestCommonSubstring(transmission1, transmission2);
     cout << lcs.first << " " << lcs.second << "\n";
-    */
+    
 
     return 0;
 }
