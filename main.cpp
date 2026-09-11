@@ -55,8 +55,11 @@ int main() {
     // ---------- Part 3 ----------
     
     pair<int, int> lcs = longestCommonSubstring(transmission1, transmission2);
-    cout << lcs.first << " " << lcs.second << "\n";
-    
+    if (lcs.second == 0){
+        cout << "No common substring found..." << "\n";
+    } else {
+        cout << lcs.first << " " << lcs.second << "\n";
+    }
 
     return 0;
 }
@@ -140,5 +143,30 @@ pair<int, int> longestPalindrome(const string& text) {
 }
 
 pair<int, int> longestCommonSubstring(const string& a, const string& b) {
+    int n = a.size();
+    int m = b.size();
+    vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+    int maxLen = 0;
+    int endPos = 0;
+    int startPos;
 
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (a[i-1] == b[j-1]) {
+                dp[i][j] = dp[i-1][j-1] + 1;
+                if (dp[i][j] > maxLen) {
+                    maxLen = dp[i][j];
+                    endPos = i;
+                }
+            }
+            else {
+                dp[i][j] = 0;
+            }
+        }
+    }
+    if (maxLen == 0) {
+        return {0, 0};
+    }
+    startPos = endPos - maxLen + 1;
+    return {startPos, endPos};
 }

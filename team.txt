@@ -1,0 +1,3 @@
+Diego Rodríguez Sánchez | A01742085 | Pattern search
+Diego Israel Domínguez Nájera | A01782831 | Longest palindromic substring
+Omar Ávila Meza | A01743547 | Longest common substring
