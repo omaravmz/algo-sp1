@@ -6,6 +6,8 @@
 
 using namespace std;
 
+// --------------- FUNCTION DECLARATIONS ---------------
+
 string readFile(const string& filename);
 
 // ==================== Part 1: Pattern search ====================
@@ -17,6 +19,8 @@ string transform(const string& text);
 
 // ==================== Part 3: Longest common substring ====================
 pair<int, int> longestCommonSubstring(const string& a, const string& b);
+
+// --------------- MAIN ---------------
 
 int main() {
     const string transmission1File = "transmission1.txt";
@@ -45,7 +49,6 @@ int main() {
     }
 
     // ---------- Part 2 ----------
-    
     pair<int, int> pal1 = longestPalindrome(transmission1);
     pair<int, int> pal2 = longestPalindrome(transmission2);
     cout << pal1.first << " " << pal1.second << "\n";
@@ -53,7 +56,6 @@ int main() {
     
 
     // ---------- Part 3 ----------
-    
     pair<int, int> lcs = longestCommonSubstring(transmission1, transmission2);
     if (lcs.second == 0){
         cout << "No common substring found..." << "\n";
@@ -64,21 +66,25 @@ int main() {
     return 0;
 }
 
+// --------------- FUNCTIONS IMPLEMENTATIONS ---------------
+
 string readFile(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Error: could not open " << filename << "\n";
         return "";
     }
+
     string content, line;
     while (getline(file, line)) {
-        content += line; 
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
+        content += line;
     }
     return content;
 }
 
-//Auxiliar function to build the longest prefix suffix (LPS) array for KMP algorithm 
-//Time and Space Complexit: O(m), even though we have a while both length and i increase at most m times, so the total complexity is O(m)
 vector<int> buildLPS(const string& pattern) {
     int m = pattern.size();
     vector<int> lps(m, 0);   
@@ -104,13 +110,6 @@ vector<int> buildLPS(const string& pattern) {
     return lps;
 }
 
-/*
-Time Complexity: O(n + m), since the auxiliar function buildLPS has complexity O(m) and in the findPattern function the pointer i searchs through the text once
-the searching part has complexity O(n), so the total complexity is O(n + m)   
-
-Space Complexity: O(m), since the auxiliar function buildLPS has complexity O(m) and in the findPattern function we use a constant amount of space, 
-so the total complexity is O(m)
-*/
 bool findPattern(const string& text, const string& pattern, int& startPos) {
     int n = text.size();
     int m = pattern.size();
@@ -171,12 +170,11 @@ pair<int, int> longestPalindrome(const string& text) {
             centerIndex = i;
         }
 
-    };
+    }
 
     int start = (centerIndex - maxLen) / 2;
     int end = start + maxLen - 1;
 
-    // Ternary operator in case the string is empty, returning (0, 0) instead of (-1, -1)
     return maxLen > 0 ? make_pair(start + 1, end + 1) : make_pair(0, 0);
 }
 
@@ -192,28 +190,32 @@ string transform(const string& text){
 pair<int, int> longestCommonSubstring(const string& a, const string& b) {
     int n = a.size();
     int m = b.size();
-    vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+    vector<int> prev(m + 1, 0);
+    vector<int> curr(m + 1, 0);
+
     int maxLen = 0;
     int endPos = 0;
-    int startPos;
 
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
-            if (a[i-1] == b[j-1]) {
-                dp[i][j] = dp[i-1][j-1] + 1;
-                if (dp[i][j] > maxLen) {
-                    maxLen = dp[i][j];
+            if (a[i - 1] == b[j - 1]) {
+                curr[j] = prev[j - 1] + 1;
+                if (curr[j] > maxLen) {
+                    maxLen = curr[j];
                     endPos = i;
                 }
-            }
-            else {
-                dp[i][j] = 0;
+            } else {
+                curr[j] = 0;
             }
         }
+        prev = curr;
     }
+
     if (maxLen == 0) {
         return {0, 0};
     }
-    startPos = endPos - maxLen + 1;
+
+    int startPos = endPos - maxLen + 1;
     return {startPos, endPos};
 }
