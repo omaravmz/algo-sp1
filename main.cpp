@@ -45,14 +45,18 @@ int main() {
     }
 
     // ---------- Part 2 ----------
+    /*
     pair<int, int> pal1 = longestPalindrome(transmission1);
     pair<int, int> pal2 = longestPalindrome(transmission2);
     cout << pal1.first << " " << pal1.second << "\n";
     cout << pal2.first << " " << pal2.second << "\n";
+    */
 
     // ---------- Part 3 ----------
+    /*
     pair<int, int> lcs = longestCommonSubstring(transmission1, transmission2);
     cout << lcs.first << " " << lcs.second << "\n";
+    */
 
     return 0;
 }
@@ -70,8 +74,65 @@ string readFile(const string& filename) {
     return content;
 }
 
+//Auxiliar function to build the longest prefix suffix (LPS) array for KMP algorithm 
+//Time and Space Complexit: O(m), even though we have a while both length and i increase at most m times, so the total complexity is O(m)
+vector<int> buildLPS(const string& pattern) {
+    int m = pattern.size();
+    vector<int> lps(m, 0);   
+
+    int length = 0;   
+    int i = 1;           
+
+    while (i < m) {
+        if (pattern[i] == pattern[length]) {
+            length = length + 1;
+            lps[i] = length;
+            i = i + 1;
+        } else {
+            if (length != 0) {
+                length = lps[length - 1]; 
+            } else {
+                lps[i] = 0;
+                i = i + 1;
+            }
+        }
+    }
+
+    return lps;
+}
+
+/*
+Time Complexity: O(n + m), since the auxiliar function buildLPS has complexity O(m) and in the findPattern function the pointer i searchs through the text once
+the searching part has complexity O(n), so the total complexity is O(n + m)   
+
+Space Complexity: O(m), since the auxiliar function buildLPS has complexity O(m) and in the findPattern function we use a constant amount of space, 
+so the total complexity is O(m)
+*/
 bool findPattern(const string& text, const string& pattern, int& startPos) {
+    int n = text.size();
+    int m = pattern.size();
+    vector<int> lps = buildLPS(pattern);
+
+    int i = 0;
+    int j = 0;
     
+    while(i < n){
+        if (text[i]  == pattern[j]){
+            i++;
+            j++;
+            if(j==m){
+                startPos = i + 1 - j;
+                return true;
+            }
+        } else {
+            if (j !=0){
+                j = lps[j - 1];
+            } else {
+                i++;
+            }
+        }
+    }
+    return false;
 }
 
 pair<int, int> longestPalindrome(const string& text) {
